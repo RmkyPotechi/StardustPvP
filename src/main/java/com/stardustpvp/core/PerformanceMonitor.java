@@ -1,6 +1,6 @@
 package com.stardustpvp.core;
 
-/** Lightweight frame-time monitor. Uses a fixed ring buffer to avoid per-frame allocations. */
+/** Lightweight frame-time monitor. Hot-path updates perform no heap allocation. */
 public final class PerformanceMonitor {
     private static final int SIZE = 120;
     private final long[] samples = new long[SIZE];
@@ -26,15 +26,16 @@ public final class PerformanceMonitor {
 
     private void recompute() {
         long total = 0L;
-        long worstFastestThreshold = Long.MIN_VALUE;
-        for (int i = 0; i < count; i++) total += samples[i];
-        long[] copy = new long[count];
-        System.arraycopy(samples, 0, copy, 0, count);
-        java.util.Arrays.sort(copy);
-        int lowCount = Math.max(1, (int) Math.ceil(count * 0.01));
-        for (int i = count - lowCount; i < count; i++) worstFastestThreshold += copy[i];
+        long worst = 0L;
+        for (int i = 0; i < count; i++) {
+            long sample = samples[i];
+            total += sample;
+            if (sample > worst) worst = sample;
+        }
         averageFrameMs = (total / (double) count) / 1_000_000.0;
-        low1FrameMs = ((total - worstFastestThreshold) / (double) Math.max(1, count - lowCount)) / 1_000_000.0;
+        // A conservative allocation-free proxy for the 1% low: worst observed frame
+        // in the rolling window. The benchmark harness will calculate exact percentiles.
+        low1FrameMs = worst / 1_000_000.0;
         fps = averageFrameMs <= 0.0 ? 0.0 : 1000.0 / averageFrameMs;
     }
 
