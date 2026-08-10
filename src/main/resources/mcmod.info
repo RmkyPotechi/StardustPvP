@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "stardustpvp",
+    "name": "StardustPvP",
+    "description": "Performance-first Minecraft 1.8.9 PvP client mod with fair-play quality-of-life features.",
+    "version": "0.1.0",
+    "mcversion": "1.8.9",
+    "url": "https://github.com/RmkyPotechi/StardustPvP",
+    "updateUrl": "",
+    "authorList": ["RmkyPotechi"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
