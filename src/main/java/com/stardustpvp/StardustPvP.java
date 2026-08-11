@@ -4,6 +4,9 @@ import com.stardustpvp.core.PerformanceMonitor;
 import com.stardustpvp.core.PerformanceStats;
 import com.stardustpvp.core.StardustConfig;
 import com.stardustpvp.core.StardustHud;
+import com.stardustpvp.hud.HudElementState;
+import com.stardustpvp.hud.HudRegistry;
+import com.stardustpvp.hud.HudRenderer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -21,6 +24,7 @@ public final class StardustPvP {
 
     private final PerformanceMonitor performanceMonitor = new PerformanceMonitor();
     private final PerformanceStats performanceStats = new PerformanceStats();
+    private final HudRegistry hudRegistry = new HudRegistry();
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -31,6 +35,10 @@ public final class StardustPvP {
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new StardustHud(performanceMonitor));
+
+        hudRegistry.register(new HudElementState("stardust.fps", "FPS", 4.0F, 4.0F));
+        hudRegistry.register(new HudElementState("stardust.ping", "Ping", 4.0F, 16.0F));
+        MinecraftForge.EVENT_BUS.register(new HudRenderer(hudRegistry));
     }
 
     @SubscribeEvent
@@ -52,5 +60,9 @@ public final class StardustPvP {
 
     public PerformanceStats getPerformanceStats() {
         return performanceStats;
+    }
+
+    public HudRegistry getHudRegistry() {
+        return hudRegistry;
     }
 }
