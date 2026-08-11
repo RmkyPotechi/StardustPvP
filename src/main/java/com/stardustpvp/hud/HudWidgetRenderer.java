@@ -5,13 +5,15 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-/** Lightweight visual renderer for the built-in HUD widgets. */
+/** Renders live HUD widgets using the same layout state edited by HUD Editor. */
 public final class HudWidgetRenderer {
     private final Minecraft mc = Minecraft.getMinecraft();
     private final HudWidgetCollector collector;
+    private final HudLayoutManager layout;
 
-    public HudWidgetRenderer(HudWidgetCollector collector) {
+    public HudWidgetRenderer(HudWidgetCollector collector, HudLayoutManager layout) {
         this.collector = collector;
+        this.layout = layout;
     }
 
     @SubscribeEvent
@@ -19,17 +21,28 @@ public final class HudWidgetRenderer {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL || mc.thePlayer == null) return;
         HudWidgetState s = collector.collect(System.currentTimeMillis());
         FontRenderer font = mc.fontRendererObj;
-        int x = 8;
-        int y = 8;
-        draw(font, "FPS: " + s.fps, x, y); y += 10;
-        draw(font, "Ping: " + (s.ping < 0 ? "-" : s.ping + "ms"), x, y); y += 10;
-        draw(font, "CPS: " + s.cps, x, y); y += 12;
-        draw(font, "XYZ: " + (int)s.x + " " + (int)s.y + " " + (int)s.z, x, y); y += 12;
-        draw(font, "Armor: " + s.armorCount, x, y); y += 10;
-        draw(font, "Potions: " + s.activePotionCount, x, y);
+        drawElement(font, HudWidgetIds.FPS, "FPS: " + s.fps);
+        drawElement(font, HudWidgetIds.PING, "Ping: " + (s.ping < 0 ? "-" : s.ping + "ms"));
+        drawElement(font, HudWidgetIds.CPS, "CPS: " + s.cps);
+        drawElement(font, HudWidgetIds.COORDINATES, "XYZ: " + (int)s.x + " " + (int)s.y + " " + (int)s.z);
+        drawElement(font, HudWidgetIds.ARMOR, "Armor: " + s.armorCount);
+        drawElement(font, HudWidgetIds.POTIONS, "Potions: " + s.activePotionCount);
     }
 
-    private void draw(FontRenderer font, String text, int x, int y) {
-        font.drawStringWithShadow(text, x, y, 0xFFFFFF);
+    private void drawElement(FontRenderer font, String id, String text) {
+        HudElementState element = layout.get(id);
+        if (element == null || !element.isEnabled()) return;
+        float scale = element.getScale();
+        int x = Math.round(element.getX());
+        int y = Math.round(element.getY());
+        if (scale == 1.0F) {
+            font.drawStringWithShadow(text, x, y, 0xFFFFFF);
+            return;
+        }
+        net.minecraft.client.renderer.GlStateManager.pushMatrix();
+        net.minecraft.client.renderer.GlStateManager.translate(x, y, 0.0F);
+        net.minecraft.client.renderer.GlStateManager.scale(scale, scale, 1.0F);
+        font.drawStringWithShadow(text, 0, 0, 0xFFFFFF);
+        net.minecraft.client.renderer.GlStateManager.popMatrix();
     }
 }
