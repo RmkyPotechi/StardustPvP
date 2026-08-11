@@ -5,7 +5,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-/** Compact left/right CPS display using existing click tracking. */
+/** Compact left/right CPS display using real click tracking. */
 public final class ClickHudRenderer {
     private final Minecraft mc = Minecraft.getMinecraft();
     private final CpsTracker tracker;
@@ -24,8 +24,8 @@ public final class ClickHudRenderer {
         FontRenderer f = mc.fontRendererObj;
         int x = Math.round(e.getX());
         int y = Math.round(e.getY());
-        int cps = tracker.getClicksLastSecond(System.currentTimeMillis());
-        f.drawStringWithShadow("LMB " + cps, x, y, HudTheme.TEXT);
-        f.drawStringWithShadow("RMB " + cps, x, y + 10, HudTheme.TEXT_MUTED);
+        long now = System.currentTimeMillis();
+        f.drawStringWithShadow("LMB " + tracker.getLeftClicksLastSecond(now), x, y, HudTheme.TEXT);
+        f.drawStringWithShadow("RMB " + tracker.getRightClicksLastSecond(now), x, y + 10, HudTheme.TEXT_MUTED);
     }
 }
