@@ -4,13 +4,13 @@ import com.stardustpvp.core.PerformanceMonitor;
 import com.stardustpvp.core.PerformanceStats;
 import com.stardustpvp.core.StardustConfig;
 import com.stardustpvp.core.StardustHud;
-import net.minecraftforge.client.event.RenderTickEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 
 @Mod(modid = StardustPvP.MOD_ID, name = StardustPvP.NAME, version = StardustPvP.VERSION,
         clientSideOnly = true, acceptedMinecraftVersions = "[1.8.9]")
@@ -35,10 +35,10 @@ public final class StardustPvP {
 
     @SubscribeEvent
     public void onRenderTick(RenderTickEvent event) {
-        if (event.phase == RenderTickEvent.Phase.START) {
+        if (event.phase == TickEvent.Phase.START) {
             performanceMonitor.beginFrame();
             performanceStats.beginFrame();
-        } else if (event.phase == RenderTickEvent.Phase.END) {
+        } else if (event.phase == TickEvent.Phase.END) {
             performanceMonitor.endFrame();
             performanceStats.endFrame();
             performanceStats.invalidatePercentiles();
