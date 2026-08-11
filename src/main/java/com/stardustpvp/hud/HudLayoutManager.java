@@ -1,6 +1,9 @@
 package com.stardustpvp.hud;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Stores editable HUD layout state and named presets. */
@@ -12,8 +15,10 @@ public final class HudLayoutManager {
         if (element != null) elements.put(element.getId(), element);
     }
 
-    public HudElementState get(String id) {
-        return elements.get(id);
+    public HudElementState get(String id) { return elements.get(id); }
+
+    public List<HudElement> getElements() {
+        return Collections.unmodifiableList(new ArrayList<HudElement>(elements.values()));
     }
 
     public void move(String id, float x, float y) {
