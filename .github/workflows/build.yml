@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Java 8
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '8'
@@ -23,8 +23,7 @@ jobs:
 
       # ForgeGradle 2.1 / Minecraft 1.8.9 is an intentionally old build
       # stack. Install the matching Gradle distribution directly instead of
-      # using the modern Gradle setup action, whose own compatibility layer
-      # expects newer Gradle versions.
+      # using a modern Gradle setup action.
       - name: Install Gradle 2.14.1
         shell: bash
         run: |
